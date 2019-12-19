@@ -129,8 +129,8 @@ dev.doublesine.net : RSA "/etc/letsencrypt/live/<your domain>/privkey.pem"
    在 `*filter` 后添加：
 
    ```conf
-   -A ufw-before-forward --match policy --pol ipsec --dir in --proto esp -s 10.10.10.0/24 -j ACCEPT
-   -A ufw-before-forward --match policy --pol ipsec --dir out --proto esp -d 10.10.10.0/24 -j ACCEPT
+   -A ufw-before-forward --match policy --pol ipsec --dir in --proto esp -s 10.239.240.0/24 -j ACCEPT
+   -A ufw-before-forward --match policy --pol ipsec --dir out --proto esp -d 10.239.240.0/24 -j ACCEPT
    ```
 
 3. 修改 `/etc/ufw/sysctl.conf`
