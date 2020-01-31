@@ -63,7 +63,14 @@ $ sudo vim /etc/ocserv/ocserv.conf
    tunnel-all-dns = true
    ```
 
-10. 注释全部路由设置，让服务器作为默认网关：
+10. 设置DNS服务器：
+
+    ```
+    dns = 8.8.4.4
+    dns = 8.8.8.8
+    ```
+
+11. 注释全部路由设置，让服务器作为默认网关：
 
     ```
     #route = 10.0.0.0/8
@@ -71,7 +78,7 @@ $ sudo vim /etc/ocserv/ocserv.conf
     #route = 192.168.0.0/16
     ```
 
-11. 可选：
+12. 可选：
 
     ```
     try-mtu-discovery = true
@@ -101,6 +108,34 @@ $ sudo vim /etc/ocserv/ocserv.conf
    ```conf
    # NAT table rules
    *nat
-   :POSTROUTING ACCEPT [0:0]
-   -A POSTROUTING -o ens3 -j MASQUERADE
+   -A POSTROUTING -s 10.10.10.0/24 -o ens3 -j MASQUERADE
    ```
+
+4. 如果ocserv监听端口改变不了，修改 `/lib/systemd/system/ocserv.service`，注释掉下面两行：
+
+   ```conf
+   [Unit]
+   ...
+   #Requires=ocserv.socket
+
+   [Service]
+   ...
+   ...
+
+   [Install]
+   ...
+   #Also=ocserv.socket
+   ```
+
+   同时关闭 `ocserv.socket` 服务：
+
+   ```console
+   $ sudo systemctl disable ocserv.socket
+   ```
+
+
+## 4. Add VPN account
+
+```console
+$ sudo ocpasswd -c /etc/ocserv/ocpasswd <new username>
+```
