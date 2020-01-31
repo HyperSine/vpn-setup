@@ -21,13 +21,21 @@ $ letsencrypt certonly --standalone --email <your email> -d <your domain>
 $ letsencrypt certonly --standalone --renew-by-default -d <your domain>
 ```
 
-链接、复制证书到 `/etc/ipsec.d/`
+链接证书到 `/etc/ipsec.d/`
 
 ```console
 $ ln -s /etc/letsencrypt/live/<your domain>/chain.pem /etc/ipsec.d/cacerts/<your domain>.pem
 $ ln -s /etc/letsencrypt/live/<your domain>/cert.pem /etc/ipsec.d/certs/<your domain>.pem
-$ cp /etc/letsencrypt/live/<your domain>/privkey.pem /etc/ipsec.d/private/<your domain>.pem
+$ ln -s /etc/letsencrypt/live/<your domain>/privkey.pem /etc/ipsec.d/private/<your domain>.pem
 ```
+
+如果服务器是Ubuntu系统，你需要在 `/etc/apparmor.d/usr.lib.ipsec.charon` 中加入下面一行
+
+```
+  /etc/letsencrypt/**       r,
+```
+
+以便charon可以访问letsencrypt证书，否则会出现访问拒绝。
 
 ## 3. 配置 `/etc/ipsec.conf`
 
@@ -98,7 +106,7 @@ conn ikev2-vpn
 # RSA private key for this host, authenticating it to any other host
 # which knows the public part.
 
-dev.doublesine.net : RSA "/etc/letsencrypt/live/<your domain>/privkey.pem"
+<your domain> : RSA "/etc/letsencrypt/live/<your domain>/privkey.pem"
 
 <username> %any% : EAP "<password>"
 ```
